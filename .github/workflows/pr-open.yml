@@ -1,0 +1,55 @@
+name: pr-open
+on:
+  pull_request:
+    branches:
+    - main
+env:
+ ecr_registry: 927119894526.dkr.ecr.us-east-1.amazonaws.com
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      
+    - name: Build, tag, and push image to Amazon ECR
+      run: |
+        docker build -t ${{ env.ecr_registry }}/demo-app:pr-${{ github.event.pull_request.number }}
+        docker push ${{ env.ecr_registry }}/demo-app:pr-${{ github.event.pull_request.number }}   
+    # - name: Setup Kube config
+    #   uses: azure/k8s-set-context@v1
+    #   with:
+    #     method: kubeconfig
+    #     kubeconfig: ${{ secrets.KUBE_CONFIG }}
+    # - name: Deploy preview
+    #   run: |
+    #     # Install vCluster
+    #     curl -s -L "https://github.com/loft-sh/vcluster/releases/latest" | sed -nE 's!.*"([^"]*vcluster-linux-amd64)".*!https://github.com\1!p' | xargs -n 1 curl -L -o vcluster && chmod +x vcluster;
+    #     sudo mv vcluster /usr/local/bin;
+
+    #     # Create a cluster
+    #     vcluster create demo-app-pr-${{ github.event.pull_request.number }} --namespace prs --expose 
+    #     vcluster connect demo-app-pr-${{ github.event.pull_request.number }} --namespace prs
+    #     export KUBECONFIG=$PWD/kubeconfig.yaml
+    #     sleep 5
+    #     kubectl get ingresses
+
+    #     # Deploy
+    #     cd kustomize/overlays/preview
+    #     kustomize edit set image demo-app=${{ env.ecr_registry }}/demo-app:pr-${{ github.event.pull_request.number }}
+    #     kustomize build | kubectl apply --filename -
+    #     kubectl rollout status deployment demo-app
