@@ -28,7 +28,7 @@ jobs:
       
     - name: Build, tag, and push image to Amazon ECR
       run: |
-        docker build -t ${{ env.ecr_registry }}/demo-app:pr-${{ github.event.pull_request.number }}
+        docker build -t ${{ env.ecr_registry }}/demo-app:pr-${{ github.event.pull_request.number }} .
         docker push ${{ env.ecr_registry }}/demo-app:pr-${{ github.event.pull_request.number }}   
     # - name: Setup Kube config
     #   uses: azure/k8s-set-context@v1
