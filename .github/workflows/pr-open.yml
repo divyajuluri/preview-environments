@@ -40,7 +40,8 @@ jobs:
       run: |
         # Install vCluster
         curl -L -o vcluster "https://github.com/loft-sh/vcluster/releases/latest/download/vcluster-linux-amd64" && sudo install -c -m 0755 vcluster /usr/local/bin;
-        sudo mv vcluster /usr/local/bin;
+        sudo mkdir vcluster-demo;
+        cd vcluster-demo
         # Create a cluster
         vcluster create demo-app-pr-${{ github.event.pull_request.number }} --namespace prs --expose 
         vcluster connect demo-app-pr-${{ github.event.pull_request.number }} --namespace prs
