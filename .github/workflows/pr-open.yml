@@ -4,7 +4,7 @@ on:
     branches:
     - main
 env:
- ecr_registry: 927119894526.dkr.ecr.us-east-1.amazonaws.com
+ ecr_registry: 927119894526.dkr.ecr.ap-south-1.amazonaws.com
 jobs:
   build:
     runs-on: ubuntu-latest
