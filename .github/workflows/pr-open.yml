@@ -47,6 +47,7 @@ jobs:
         vcluster connect demo-app-pr-${{ github.event.pull_request.number }} --namespace prs
         cd ..
         export KUBECONFIG=$PWD/kubeconfig.yaml
+        less $PWD/kubeconfig.yaml
         sleep 5
         kubectl get ingresses
 
